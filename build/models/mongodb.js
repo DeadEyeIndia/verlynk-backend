@@ -28,7 +28,9 @@ function createIndexes(client) {
         yield Promise.all([
             db
                 .collection("users")
-                .createIndexes([{ key: { email: 1 }, unique: true }]),
+                .createIndexes([{ key: { email: 1 }, unique: true }], {
+                dbName: "verlynk-db",
+            }),
         ]);
         indexesCreated = true;
         return client;

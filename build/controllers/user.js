@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userSignUp = void 0;
+exports.getUser = exports.userSignUp = void 0;
 const mongodb_1 = require("mongodb");
 const catchAsyncError_1 = __importDefault(require("../middleware/catchAsyncError"));
 const errorHandling_1 = __importDefault(require("../utils/errorHandling"));
@@ -25,22 +25,30 @@ exports.userSignUp = (0, catchAsyncError_1.default)((req, res, next) => __awaite
     if (fullname === "" || email === "" || password === "")
         return next(new errorHandling_1.default("Missing fields", 406));
     const db = yield (0, mongodb_2.getMongoDb)();
-    const existingUser = yield (0, user_1.findUserByEmail)(db, email);
-    if (existingUser) {
-        return next(new errorHandling_1.default("Email already registered!", 409));
-    }
     const hashedPassword = yield (0, bcrypt_1.hashPassword)(password);
+    const date = new Date();
     const newUser = yield db.collection(constants_1.USER_COLLECTION).insertOne({
         _id: new mongodb_1.ObjectId(),
         fullname: fullname,
         email: email,
         password: hashedPassword,
+        createdAt: date,
+        updatedAt: date,
     });
     if (!newUser.acknowledged || !newUser.insertedId) {
         return next(new errorHandling_1.default("Registration failed, Try again after sometime!", 409));
     }
-    return res.status(201).json({
+    res.status(201).json({
         message: "Registration success",
         success: true,
     });
+}));
+exports.getUser = (0, catchAsyncError_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const db = yield (0, mongodb_2.getMongoDb)();
+    const existingUser = yield (0, user_1.findUserByEmail)(db, req.user.email);
+    if (!existingUser) {
+        return next(new errorHandling_1.default("User not found", 404));
+    }
+    const user = (0, constants_1.pick)(existingUser, "_id", "email", "fullname", "createdAt");
+    res.status(200).json(user);
 }));
