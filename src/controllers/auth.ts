@@ -1,12 +1,20 @@
 import { NextFunction, Request, Response } from "express";
 
-import { getMongoDb } from "../models/mongodb";
+import { getMongoClient } from "../models/mongodb";
 import { findUserByEmail } from "../lib/data/user";
 import catchAsyncError from "../middleware/catchAsyncError";
 import ErrorHandler from "../utils/errorHandling";
 import { comparePassword } from "../utils/bcrypt";
 import { sendToken } from "../utils/jwt";
+import { DB_NAME } from "../utils/constants";
 
+/**
+ * Authentication controller function for user sign-in functionality.
+ * @param {Request<{}, {}, { email: string; password: string }>} req - The request object.
+ * @param {Response} res - The response object sending jsonwebtoken to client.
+ * @param {NextFunction} next - The next function to be called in the middleware stack.
+ * @returns {Promise<void>} Promise representing the asynchronous operation.
+ */
 export const userSignIn = catchAsyncError(
   async (
     req: Request<{}, {}, { email: string; password: string }>,
@@ -14,12 +22,12 @@ export const userSignIn = catchAsyncError(
     next: NextFunction
   ) => {
     const { email, password } = req.body;
-
     if (email === "" || password === "") {
       return next(new ErrorHandler("Missing Fields!", 406));
     }
 
-    const db = await getMongoDb();
+    const { client } = await getMongoClient();
+    const db = (await client).db(DB_NAME);
 
     const existingUser = await findUserByEmail(db, email);
     if (!existingUser) {
@@ -34,10 +42,19 @@ export const userSignIn = catchAsyncError(
       return next(new ErrorHandler("Invalid credentials!", 401));
     }
 
+    (await client).close();
+
     sendToken(existingUser, 200, res);
   }
 );
 
+/**
+ * Authentication controller function for user sign-out functionality.
+ * @param {Request} _req - The request object.
+ * @param {Response} res - The response object indicating successful sign-out.
+ * @param {NextFunction} _next - The next function to be called in the middleware stack.
+ * @returns {Promise<Response>} A Promise resolving to the response indicating successful sign-out.
+ */
 export const userSignOut = catchAsyncError(
   async (
     _req: Request,
@@ -52,7 +69,7 @@ export const userSignOut = catchAsyncError(
       priority: "high",
     });
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       message: "Logged out",
     });

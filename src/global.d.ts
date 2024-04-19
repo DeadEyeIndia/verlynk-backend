@@ -1,11 +1,14 @@
-import { MongoClient, ObjectId } from "mongodb";
+import { GridFSBucket, MongoClient, ObjectId } from "mongodb";
 
 declare global {
-  var _mongoClientPromise: Promise<MongoClient>;
+  var _mongoClientPromise: Promise<MongoClient> | null;
+  var bucket: GridFSBucket | null;
   namespace NodeJS {
     interface ProcessEnv {
       MONGODB_URI: string;
       JWT_SECRET: string;
+      DB_NAME: string;
+      PORT: number;
       NODE_ENV: "production" | "development";
     }
   }
@@ -15,6 +18,10 @@ declare global {
       user: {
         _id: ObjectId;
         email: string;
+      };
+      postimages: {
+        id: ObjectId;
+        filename: string;
       };
     }
   }

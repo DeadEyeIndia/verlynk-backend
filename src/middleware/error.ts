@@ -1,31 +1,17 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 
 import ErrorHandler from "../utils/errorHandling";
 
-export default (
-  err: ErrorHandler,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+/**
+ * Express middleware for handling custom errors and sending appropriate responses.
+ * @param {ErrorHandler} err - The error object.
+ * @param {import('express').Request} _req - The request object.
+ * @param {import('express').Response} res - The response object.
+ */
+export default (err: ErrorHandler, _req: Request, res: Response) => {
   err.statusCode = err.statusCode || 500;
   err.message = err.message || "Internal Server Error";
 
-  //   MongoDB Id error handling
-  if (err.name === "CastError") {
-    const message = `Resource not found`;
-    err = new ErrorHandler(message, 400);
-  }
-
-  //   Duplication error handling
-  // if (
-  //   err.name === "MongoServerError" &&
-  //   (err as any).code === 11000 &&
-  //   (err as any).keyPattern.username
-  // ) {
-  //   const message = `Username is taken`;
-  //   err = new ErrorHandler(message, 400);
-  // }
   if (
     err.name === "MongoServerError" &&
     (err as any).code === 11000 &&
@@ -45,7 +31,7 @@ export default (
     err = new ErrorHandler(message, 400);
   }
 
-  res.status(err.statusCode).json({
+  return res.status(err.statusCode).json({
     success: false,
     error: err.message,
   });

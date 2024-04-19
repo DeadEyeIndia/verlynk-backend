@@ -3,6 +3,12 @@ import { sign } from "jsonwebtoken";
 
 import { IUser } from "../models/user";
 
+/**
+ * Sends a JWT token as a cookie in the response and sends a JSON response indicating success.
+ * @param {IUser} user - The user object for whom the token is generated.
+ * @param {number} statusCode - The HTTP status code to be set in the response.
+ * @param {Response<{ success: boolean }>} res - The response object.
+ */
 export const sendToken = (
   user: IUser,
   statusCode: number,

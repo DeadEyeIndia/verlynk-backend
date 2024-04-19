@@ -1,5 +1,9 @@
-import { ObjectId, WithId } from "mongodb";
+import { WithId } from "mongodb";
 
+/**
+ * Defines the schema for a user.
+ * @interface
+ */
 export interface UserSchema {
   fullname: string;
   email: string;
@@ -8,4 +12,8 @@ export interface UserSchema {
   updatedAt?: Date;
 }
 
+/**
+ * Interface extending the UserSchema interface and adding MongoDB ID fields.
+ * @interface
+ */
 export interface IUser extends WithId<UserSchema> {}

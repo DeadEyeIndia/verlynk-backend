@@ -3,6 +3,13 @@ import { Db, ObjectId } from "mongodb";
 import { IUser } from "../../models/user";
 import { USER_COLLECTION } from "../../utils/constants";
 
+/**
+ *
+ * @param db - DB connection Instance
+ * @param email - User email for finding document
+ * @returns - A user document or null
+ */
+
 export const findUserByEmail = async (db: Db, email: string) => {
   try {
     const user = await db.collection<IUser>(USER_COLLECTION).findOne({ email });
@@ -12,11 +19,18 @@ export const findUserByEmail = async (db: Db, email: string) => {
   }
 };
 
-export const findUserById = async (db: Db, _id: string) => {
+/**
+ *
+ * @param db - DB connection Instance
+ * @param id - User id for finding document
+ * @returns - A user document or null
+ */
+
+export const findUserById = async (db: Db, id: string) => {
   try {
     const user = await db
       .collection<IUser>(USER_COLLECTION)
-      .findOne({ _id: new ObjectId(_id) });
+      .findOne({ _id: new ObjectId(id) });
 
     return user;
   } catch {
