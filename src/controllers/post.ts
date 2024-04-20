@@ -5,9 +5,15 @@ import catchAsyncError from "../middleware/catchAsyncError";
 import ErrorHandler from "../utils/errorHandling";
 import { getMongoClient } from "../models/mongodb";
 import { IPost } from "../models/post";
-import { DB_NAME, POST_COLLECTION } from "../utils/constants";
+import { IComment } from "../models/comment";
+import {
+  COMMENT_COLLECTION,
+  DB_NAME,
+  POST_COLLECTION,
+} from "../utils/constants";
 import { getUploadPostofFile } from "../utils/post-upload";
 import { findPostById } from "../lib/data/post";
+import { findCommentByPostId } from "../lib/data/comment";
 
 /**
  * Controller function for creating a new post.
@@ -381,7 +387,7 @@ export const deletePost = catchAsyncError(
       return next(new ErrorHandler("Resource not found", 404));
     }
 
-    if (req.user._id.toString() !== existingPost[0].author.id.toString()) {
+    if (req.user._id.toString() !== existingPost[0].author._id.toString()) {
       return next(new ErrorHandler("Not authorized", 401));
     }
 
@@ -389,12 +395,24 @@ export const deletePost = catchAsyncError(
       await bucket.delete(existingPost[0].postimage.id);
     }
 
+    const {
+      acknowledged: commentAcknowledged,
+      deletedCount: commentDeletedCount,
+    } = await db
+      .collection<IComment>(COMMENT_COLLECTION)
+      .deleteMany({ post: existingPost[0]._id });
+
     const { acknowledged, deletedCount } = await db
       .collection<IPost>(POST_COLLECTION)
       .deleteOne({ _id: existingPost[0]._id });
 
-    console.log({ acknowledged }, { deletedCount });
+    // console.log(
+    //   { acknowledged },
+    //   { deletedCount },
+    //   { commentAcknowledged },
+    //   { commentDeletedCount }
+    // );
 
-    res.status(201).json({ success: acknowledged });
+    res.status(201).json({ success: acknowledged && commentAcknowledged });
   }
 );

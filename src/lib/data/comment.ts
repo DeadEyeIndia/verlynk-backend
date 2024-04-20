@@ -7,13 +7,13 @@ import {
   USER_COLLECTION,
 } from "../../utils/constants";
 
-export const findCommentByPostId = async (db: Db, commentid: string) => {
+export const findCommentByPostId = async (db: Db, postid: string) => {
   try {
     const comments = await db
       .collection<IComment>(COMMENT_COLLECTION)
       .aggregate([
         {
-          $match: { post: new ObjectId(commentid) },
+          $match: { post: new ObjectId(postid) },
         },
         {
           $lookup: {
