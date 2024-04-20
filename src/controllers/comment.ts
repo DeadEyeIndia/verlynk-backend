@@ -132,10 +132,12 @@ export const deleteComment = catchAsyncError(
     const existingComment = await findCommentByCommentId(db, commentid);
 
     if (!existingComment) {
+      (await client).close();
       return next(new ErrorHandler("Comment does not exist", 404));
     }
 
     if (existingComment.user.toString() !== req.user._id.toString()) {
+      (await client).close();
       return next(new ErrorHandler("You can not delete this comment", 401));
     }
 
@@ -143,6 +145,7 @@ export const deleteComment = catchAsyncError(
       .collection<IComment>(COMMENT_COLLECTION)
       .deleteOne({ _id: existingComment._id });
 
+    (await client).close();
     res.status(201).json({
       success: acknowledged,
     });

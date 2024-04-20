@@ -384,10 +384,12 @@ export const deletePost = catchAsyncError(
 
     const existingPost = await findPostById(db, postid);
     if (!existingPost || existingPost.length === 0) {
+      (await client).close();
       return next(new ErrorHandler("Resource not found", 404));
     }
 
     if (req.user._id.toString() !== existingPost[0].author._id.toString()) {
+      (await client).close();
       return next(new ErrorHandler("Not authorized", 401));
     }
 
@@ -406,6 +408,7 @@ export const deletePost = catchAsyncError(
       .collection<IPost>(POST_COLLECTION)
       .deleteOne({ _id: existingPost[0]._id });
 
+    (await client).close();
     // console.log(
     //   { acknowledged },
     //   { deletedCount },
@@ -413,6 +416,6 @@ export const deletePost = catchAsyncError(
     //   { commentDeletedCount }
     // );
 
-    res.status(201).json({ success: acknowledged && commentAcknowledged });
+    res.status(201).json({ success: acknowledged || commentAcknowledged });
   }
 );
