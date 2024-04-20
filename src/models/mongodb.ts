@@ -7,7 +7,11 @@ import {
 } from "mongodb";
 
 import { IUser } from "./user";
-import { USER_COLLECTION } from "../utils/constants";
+import {
+  COMMENT_COLLECTION,
+  POST_COLLECTION,
+  USER_COLLECTION,
+} from "../utils/constants";
 
 /**
  * The MongoDB connection URI.
@@ -41,16 +45,205 @@ let indexesCreated: boolean = false;
  * Creates indexes in the MongoDB database if not already created.
  * @param {MongoClient} client - The MongoDB client instance.
  * @returns {Promise<MongoClient>} A promise resolving to the MongoDB client instance.
+ *
+ * Create [USER] indexes and [USER, POST, COMMENT] collection validations
  */
 async function createIndexes(client: MongoClient): Promise<MongoClient> {
   if (indexesCreated) return client;
   const db = client.db(dbName);
   await Promise.all([
+    db.createCollection(USER_COLLECTION, {
+      validator: {
+        $jsonSchema: {
+          bsonType: "object",
+          required: ["fullname", "email", "password"],
+          additionalProperties: false,
+          properties: {
+            _id: {
+              bsonType: "objectId",
+              description: "Id is required",
+            },
+            fullname: {
+              bsonType: "string",
+              description: "Fullname is required",
+              minLength: 3,
+            },
+            email: {
+              bsonType: "string",
+              description: "Email is required",
+              pattern: "^\\S+@\\S+\\.\\S+$",
+            },
+            password: {
+              bsonType: "string",
+              description: "Password is required",
+              minLength: 8,
+              pattern: "^(?=.*[A-Z])(?=.*[a-z])(?=.*d).{8,}$",
+            },
+            createdAt: {
+              bsonType: "date",
+            },
+            updatedAt: {
+              bsonType: "date",
+            },
+          },
+        },
+      },
+    }),
+
+    db.createCollection(POST_COLLECTION, {
+      validator: {
+        $jsonSchema: {
+          bsonType: "object",
+          required: [
+            "title",
+            "postimage",
+            "intro",
+            "quickintro",
+            "result",
+            "author",
+            "conclusion",
+          ],
+          additionalProperties: false,
+          properties: {
+            _id: {
+              bsonType: "objectId",
+            },
+            title: {
+              bsonType: "string",
+              description: "Title is required",
+              minLength: 5,
+            },
+            postimage: {
+              type: "object",
+              required: ["id", "filename"],
+              additionalProperties: false,
+              properties: {
+                id: {
+                  bsonType: "objectId",
+                  description: "Image Id is required",
+                },
+                filename: {
+                  bsonType: "string",
+                  description: "Image filename is required",
+                },
+              },
+            },
+            intro: {
+              bsonType: "array",
+              description: "Intro is required",
+              minItems: 1,
+              additionalProperties: false,
+              items: {
+                bsonType: "string",
+                description: "Intro item is required",
+              },
+            },
+            quickintro: {
+              bsonType: "object",
+              description: "Quick intro is required",
+              required: ["title", "lists"],
+              properties: {
+                title: {
+                  bsonType: "string",
+                  description: "Quick intro title is required",
+                },
+                lists: {
+                  bsonType: "array",
+                  description: "Quick intro list is required",
+                  minItems: 1,
+                  additionalProperties: false,
+                  items: {
+                    bsonType: "string",
+                    description: "Quick intro item is required",
+                  },
+                },
+              },
+            },
+            result: {
+              bsonType: "object",
+              description: "Result is required",
+              required: ["title", "lists"],
+              properties: {
+                title: {
+                  bsonType: "string",
+                  description: "Result title is required",
+                },
+                lists: {
+                  bsonType: "array",
+                  description: "Result list is required",
+                  minItems: 1,
+                  additionalProperties: false,
+                  items: {
+                    bsonType: "string",
+                    description: "Result item is required",
+                  },
+                },
+              },
+            },
+            author: {
+              bsonType: "objectId",
+              description: "Author is required",
+            },
+            conclusion: {
+              bsonType: "array",
+              description: "Intro is required",
+              minItems: 1,
+              additionalProperties: false,
+              items: {
+                bsonType: "string",
+                description: "Conclusion item is required",
+              },
+            },
+            createdAt: {
+              bsonType: "date",
+            },
+            updatedAt: {
+              bsonType: "date",
+            },
+          },
+        },
+      },
+    }),
+
+    db.createCollection(COMMENT_COLLECTION, {
+      validator: {
+        $jsonSchema: {
+          bsonType: "object",
+          required: ["commenttext", "user", "post"],
+          additionalProperties: false,
+          properties: {
+            _id: {
+              bsonType: "objectId",
+              description: "Id is required",
+            },
+            commenttext: {
+              type: "string",
+              description: "Comment text is required",
+              minLength: 3,
+              maxLength: 200,
+            },
+            user: {
+              bsonType: "objectId",
+              description: "User is required",
+            },
+            post: {
+              bsonType: "objectId",
+              description: "Post is required",
+            },
+            createdAt: {
+              bsonType: "date",
+            },
+            updatedAt: {
+              bsonType: "date",
+            },
+          },
+        },
+      },
+    }),
+
     db
       .collection<IUser>(USER_COLLECTION)
-      .createIndexes([{ key: { email: 1 }, unique: true }], {
-        dbName: dbName,
-      }),
+      .createIndexes([{ key: { email: 1 }, unique: true }], {}),
   ]);
 
   indexesCreated = true;

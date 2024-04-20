@@ -5,7 +5,7 @@ import catchAsyncError from "../middleware/catchAsyncError";
 import ErrorHandler from "../utils/errorHandling";
 import { getMongoClient } from "../models/mongodb";
 import { IPost } from "../models/post";
-import { DB_NAME, POST_COLLECTION, USER_COLLECTION } from "../utils/constants";
+import { DB_NAME, POST_COLLECTION } from "../utils/constants";
 import { getUploadPostofFile } from "../utils/post-upload";
 import { findPostById } from "../lib/data/post";
 
@@ -93,6 +93,8 @@ export const newPost = catchAsyncError(
       );
     }
 
+    const now = new Date();
+
     const { acknowledged, insertedId } = await db
       .collection<IPost>(POST_COLLECTION)
       .insertOne({
@@ -113,6 +115,8 @@ export const newPost = catchAsyncError(
         },
         conclusion: [...conclusionArr],
         author: new ObjectId(req.user._id),
+        createdAt: now,
+        updatedAt: now,
       });
 
     if (!acknowledged || !insertedId) {
@@ -240,7 +244,6 @@ export const editPost = catchAsyncError(
       (await client).close();
       return next(new ErrorHandler("Resource not found", 404));
     }
-
     if (req.user._id.toString() !== existingPost[0].author._id.toString()) {
       (await client).close();
       return next(new ErrorHandler("Not authorized!", 400));
@@ -257,11 +260,10 @@ export const editPost = catchAsyncError(
             quickintro: { title: quickintrotitle, lists: [...quicklistArr] },
             result: { title: resulttitle, lists: [...resultListArr] },
             conclusion: [...conclusionArr],
+            updatedAt: new Date(),
           },
         }
       );
-
-    // console.log(acknowledged, modifiedCount);
 
     if (!acknowledged) {
       (await client).close();
@@ -334,6 +336,7 @@ export const editPostImage = catchAsyncError(
               id: id,
               filename: filename,
             },
+            updatedAt: new Date(),
           },
         }
       );
@@ -378,7 +381,7 @@ export const deletePost = catchAsyncError(
       return next(new ErrorHandler("Resource not found", 404));
     }
 
-    if (req.user._id.toString() !== existingPost[0].author._id.toString()) {
+    if (req.user._id.toString() !== existingPost[0].author.id.toString()) {
       return next(new ErrorHandler("Not authorized", 401));
     }
 

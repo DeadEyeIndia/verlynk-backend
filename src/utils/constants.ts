@@ -7,6 +7,8 @@
  * @template K - The keys of the properties to pick.
  */
 
+import { Document } from "mongodb";
+
 export function pick<T, K extends keyof T>(obj: T, ...props: K[]): Pick<T, K> {
   return props.reduce((result, prop) => {
     result[prop] = obj[prop];
@@ -32,3 +34,9 @@ export const USER_COLLECTION: string = "users";
  * @type {string}
  */
 export const POST_COLLECTION: string = "posts";
+
+/**
+ * The name of the comment collection in the MongoDB database.
+ * @type {string}
+ */
+export const COMMENT_COLLECTION: string = "comments";

@@ -15,7 +15,8 @@ export interface PostSchema extends Document {
   result: ResultSchema;
   conclusion: string[];
   author: ObjectId;
-  comments?: [ObjectId];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 /**
