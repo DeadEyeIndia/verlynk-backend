@@ -1,10 +1,10 @@
-import { WithId } from "mongodb";
+import { Document, WithId } from "mongodb";
 
 /**
  * Defines the schema for a user.
  * @interface
  */
-export interface UserSchema {
+export interface UserSchema extends Document {
   fullname: string;
   email: string;
   password: string;

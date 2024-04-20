@@ -1,8 +1,7 @@
-/**
- * Reference to the global TypeScript declarations file.
- */
 /// <reference path="global.d.ts" />
 
+import env from "dotenv";
+env.config();
 import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";

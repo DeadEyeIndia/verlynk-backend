@@ -31,16 +31,21 @@ export const isAuthenticatedUser = catchAsyncError(
       return next(new ErrorHandler("Please login!", 403));
     }
 
+    // console.log({ decodeData });
+
     const { client } = await getMongoClient();
     const db = (await client).db(DB_NAME);
 
     const existingUser = await findUserById(db, decodeData.id);
+    // console.log(existingUser);
     if (!existingUser) {
       return next(new ErrorHandler("User not found in auth!", 403));
     }
 
     const user = pick(existingUser, "_id", "email");
     req.user = user;
+
+    (await client).close();
 
     next();
   }

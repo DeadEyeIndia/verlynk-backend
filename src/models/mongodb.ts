@@ -7,6 +7,7 @@ import {
 } from "mongodb";
 
 import { IUser } from "./user";
+import { USER_COLLECTION } from "../utils/constants";
 
 /**
  * The MongoDB connection URI.
@@ -14,6 +15,9 @@ import { IUser } from "./user";
  * @type {string}
  */
 const uri: string = process.env.MONGODB_URI || "mongodb://localhost:27017/";
+const dbName: string = process.env.DB_NAME || "verlynk-db";
+const dbBucketName: string = process.env.DB_BUCKET_NAME || "verlynk-files-db";
+const bucketName: string = process.env.BUCKET_NAME || "post";
 
 /**
  * Options for MongoDB client configuration.
@@ -40,12 +44,12 @@ let indexesCreated: boolean = false;
  */
 async function createIndexes(client: MongoClient): Promise<MongoClient> {
   if (indexesCreated) return client;
-  const db = client.db("verlynk-db");
+  const db = client.db(dbName);
   await Promise.all([
     db
-      .collection<IUser>("users")
+      .collection<IUser>(USER_COLLECTION)
       .createIndexes([{ key: { email: 1 }, unique: true }], {
-        dbName: "verlynk-db",
+        dbName: dbName,
       }),
   ]);
 
@@ -62,28 +66,12 @@ export async function getMongoClient(): Promise<{
   client: Promise<MongoClient>;
   bucket: GridFSBucket;
 }> {
-  if (!global._mongoClientPromise || !global.bucket) {
-    const client = new MongoClient(uri, options);
-    const bucket = new GridFSBucket(client.db("verlynk-files-db"), {
-      bucketName: "images",
-    });
+  const client = new MongoClient(uri, options);
 
-    global._mongoClientPromise = client
-      .connect()
-      .then((client) => createIndexes(client));
-    global.bucket = bucket;
+  const mongo = client.connect().then((client) => createIndexes(client));
+  const bucket = new GridFSBucket(client.db(dbBucketName), {
+    bucketName: bucketName,
+  });
 
-    return { client: global._mongoClientPromise, bucket: global.bucket };
-  }
-
-  return { client: global._mongoClientPromise, bucket: global.bucket };
-}
-
-/**
- * Retrieves the MongoDB database instance.
- * @returns {Promise<Db>} A promise resolving to the MongoDB database instance.
- */
-export async function getMongoDb(): Promise<Db> {
-  const { client } = await getMongoClient();
-  return (await client).db("verlynk-db");
+  return { client: mongo, bucket: bucket };
 }

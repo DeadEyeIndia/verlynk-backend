@@ -83,6 +83,6 @@ export const getUser = catchAsyncError(
 
     const user = pick(existingUser, "_id", "email", "fullname", "createdAt");
 
-    res.status(200).json(user);
+    return res.status(200).json(user);
   }
 );

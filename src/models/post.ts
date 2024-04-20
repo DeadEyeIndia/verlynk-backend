@@ -1,10 +1,10 @@
-import { ObjectId, WithId } from "mongodb";
+import { Document, ObjectId, WithId } from "mongodb";
 
 /**
  * Defines the schema for a post.
  * @interface
  */
-export interface PostSchema {
+export interface PostSchema extends Document {
   title: string;
   postimage: {
     id: ObjectId;

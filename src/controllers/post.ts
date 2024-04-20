@@ -80,12 +80,10 @@ export const newPost = catchAsyncError(
     }
 
     const { client } = await getMongoClient();
-
     const db = (await client).db(DB_NAME);
 
-    const uploadId = await getUploadPostofFile(req, req.file);
-
-    if (!uploadId.id || !uploadId.filename) {
+    const { id, filename } = await getUploadPostofFile(req, req.file);
+    if (!id || !filename) {
       (await client).close();
       return next(
         new ErrorHandler(
@@ -95,27 +93,29 @@ export const newPost = catchAsyncError(
       );
     }
 
-    const newPost = await db.collection<IPost>(POST_COLLECTION).insertOne({
-      _id: new ObjectId(),
-      title: title.trim(),
-      postimage: {
-        id: uploadId.id,
-        filename: uploadId.filename,
-      },
-      intro: [...introArr],
-      quickintro: {
-        title: quickintrotitle.trim(),
-        lists: [...quicklistArr],
-      },
-      result: {
-        title: resulttitle.trim(),
-        lists: [...resultListArr],
-      },
-      conclusion: [...conclusionArr],
-      author: new ObjectId(req.user._id),
-    });
+    const { acknowledged, insertedId } = await db
+      .collection<IPost>(POST_COLLECTION)
+      .insertOne({
+        _id: new ObjectId(),
+        title: title.trim(),
+        postimage: {
+          id: id,
+          filename: filename,
+        },
+        intro: [...introArr],
+        quickintro: {
+          title: quickintrotitle.trim(),
+          lists: [...quicklistArr],
+        },
+        result: {
+          title: resulttitle.trim(),
+          lists: [...resultListArr],
+        },
+        conclusion: [...conclusionArr],
+        author: new ObjectId(req.user._id),
+      });
 
-    if (!newPost.acknowledged || !newPost.insertedId) {
+    if (!acknowledged || !insertedId) {
       (await client).close();
       return next(
         new ErrorHandler("Upload incomplete, try again afer sometime", 400)
@@ -123,14 +123,45 @@ export const newPost = catchAsyncError(
     }
 
     (await client).close();
+    res.status(201).json({ success: acknowledged });
+  }
+);
 
-    res.status(201).json({ success: true });
+/**
+ * Post controller function for get a post using params postid.
+ * @param {Request} req - The request object containing the post ID parameter and the fields to update.
+ * @param {Response} res - The response object sending client a success and modifiedcount.
+ * @param {NextFunction} next - The next function to be called in the middleware stack.
+ * @returns {Promise<void>} A promise that resolves after handling the get post operation.
+ */
+export const getPost = catchAsyncError(
+  async (
+    req: Request<{ postid: string }>,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const { postid } = req.params;
+    if (postid === undefined || !ObjectId.isValid(postid)) {
+      return next(new ErrorHandler("Resource not found", 404));
+    }
+
+    const { client } = await getMongoClient();
+    const db = (await client).db(DB_NAME);
+
+    const existingPost = await findPostById(db, postid);
+    if (!existingPost || existingPost.length === 0) {
+      (await client).close();
+      return next(new ErrorHandler("Resource not found", 404));
+    }
+
+    (await client).close();
+    res.status(200).json(existingPost[0]);
   }
 );
 
 /**
  * Post controller function for editing a post.
- * @param {Request<{postid: string}, {}, {title: string; intro: string; quickintrotitle: string; quickintrolist: string; resulttitle: string; resultlist: string; conclusion: string;}>} req - The request object containing the post ID parameter and the fields to update.
+ * @param {Request} req - The request object containing the post ID parameter and the fields to update.
  * @param {Response} res - The response object sending client a success and modifiedcount.
  * @param {NextFunction} next - The next function to be called in the middleware stack.
  * @returns {Promise<void>} A promise that resolves after handling the edit post operation.
@@ -166,8 +197,8 @@ export const editPost = catchAsyncError(
       title,
     } = req.body;
 
-    if (postid === undefined) {
-      return next(new ErrorHandler("PostId missing", 406));
+    if (postid === undefined || !ObjectId.isValid(postid)) {
+      return next(new ErrorHandler("Resource not found", 406));
     }
 
     if (
@@ -182,7 +213,7 @@ export const editPost = catchAsyncError(
       resulttitle === undefined ||
       resulttitle === ""
     ) {
-      return next(new ErrorHandler("Missing Fields", 406));
+      return next(new ErrorHandler("Missing fields", 406));
     }
 
     const regex: RegExp = /\s*,+\s*/;
@@ -205,16 +236,20 @@ export const editPost = catchAsyncError(
     const db = (await client).db(DB_NAME);
 
     const existingPost = await findPostById(db, postid);
-
-    if (!existingPost) {
+    if (!existingPost || existingPost.length === 0) {
       (await client).close();
       return next(new ErrorHandler("Resource not found", 404));
     }
 
-    const { acknowledged, modifiedCount } = await db
+    if (req.user._id.toString() !== existingPost[0].author._id.toString()) {
+      (await client).close();
+      return next(new ErrorHandler("Not authorized!", 400));
+    }
+
+    const { acknowledged } = await db
       .collection<IPost>(POST_COLLECTION)
       .updateOne(
-        { _id: existingPost._id },
+        { _id: existingPost[0]._id },
         {
           $set: {
             title: title,
@@ -226,8 +261,137 @@ export const editPost = catchAsyncError(
         }
       );
 
-    console.log(acknowledged, modifiedCount);
+    // console.log(acknowledged, modifiedCount);
 
-    res.status(201).json({ success: acknowledged, modifiedCount });
+    if (!acknowledged) {
+      (await client).close();
+      return next(new ErrorHandler("Update not successful", 400));
+    }
+
+    (await client).close();
+    res.status(201).json({ success: acknowledged });
+  }
+);
+
+/**
+ * Post controller function for editing a post image.
+ * @param {Request} req - The request object containing the post ID parameter and the fields to update.
+ * @param {Response} res - The response object sending client a success and modifiedcount.
+ * @param {NextFunction} next - The next function to be called in the middleware stack.
+ * @returns {Promise<void>} A promise that resolves after handling the edit post operation.
+ */
+export const editPostImage = catchAsyncError(
+  async (
+    req: Request<{ postid: string }>,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const { postid } = req.params;
+
+    if (postid === undefined || !ObjectId.isValid(postid)) {
+      return next(new ErrorHandler("Resource not found", 404));
+    }
+
+    if (!req.file) {
+      return next(new ErrorHandler("Please upload a image", 406));
+    }
+
+    const { client, bucket } = await getMongoClient();
+    const db = (await client).db(DB_NAME);
+
+    const existingPost = await findPostById(db, postid);
+    if (!existingPost || existingPost.length === 0) {
+      (await client).close();
+      return next(new ErrorHandler("Resource not found", 404));
+    }
+    if (req.user._id.toString() !== existingPost[0].author._id.toString()) {
+      (await client).close();
+
+      return next(new ErrorHandler("Not authorized!", 400));
+    }
+
+    await bucket.delete(existingPost[0].postimage.id);
+
+    const { id, filename } = await getUploadPostofFile(req, req.file);
+
+    if (!id || !filename) {
+      (await client).close();
+      return next(
+        new ErrorHandler(
+          "Upload incomplete, try again with different image",
+          400
+        )
+      );
+    }
+
+    const { acknowledged } = await db
+      .collection<IPost>(POST_COLLECTION)
+      .updateOne(
+        { _id: existingPost[0]._id },
+        {
+          $set: {
+            postimage: {
+              id: id,
+              filename: filename,
+            },
+          },
+        }
+      );
+
+    if (!acknowledged) {
+      (await client).close();
+      return next(new ErrorHandler("Update not successful", 400));
+    }
+
+    (await client).close();
+
+    res.status(201).json({
+      success: acknowledged,
+    });
+  }
+);
+
+/**
+ * Post controller function for deleting a post image.
+ * @param {Request} req - The request object containing the post ID parameter and the fields to update.
+ * @param {Response} res - The response object sending client a success and modifiedcount.
+ * @param {NextFunction} next - The next function to be called in the middleware stack.
+ * @returns {Promise<void>} A promise that resolves after handling the deleting post operation.
+ */
+export const deletePost = catchAsyncError(
+  async (
+    req: Request<{ postid: string }>,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const { postid } = req.params;
+
+    if (postid === undefined || !ObjectId.isValid(postid)) {
+      return next(new ErrorHandler("Resource not found", 404));
+    }
+
+    const { client, bucket } = await getMongoClient();
+    const db = (await client).db(DB_NAME);
+
+    const existingPost = await findPostById(db, postid);
+    if (!existingPost || existingPost.length === 0) {
+      return next(new ErrorHandler("Resource not found", 404));
+    }
+
+    if (req.user._id.toString() !== existingPost[0].author._id.toString()) {
+      return next(new ErrorHandler("Not authorized", 401));
+    }
+
+    if (existingPost[0].postimage.id) {
+      await bucket.delete(existingPost[0].postimage.id);
+    }
+
+    const { acknowledged, deletedCount } = await db
+      .collection<IPost>(POST_COLLECTION)
+      .deleteOne({ _id: existingPost[0]._id });
+
+    console.log({ acknowledged }, { deletedCount });
+
+    res.status(201).json({ success: acknowledged });
   }
 );

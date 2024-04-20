@@ -7,7 +7,10 @@ declare global {
     interface ProcessEnv {
       MONGODB_URI: string;
       JWT_SECRET: string;
+      JWT_EXPIRE: string;
       DB_NAME: string;
+      DB_BUCKET_NAME: string;
+      BUCKET_NAME: string;
       PORT: number;
       NODE_ENV: "production" | "development";
     }
