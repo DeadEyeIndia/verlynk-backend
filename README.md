@@ -29,6 +29,6 @@ This is a RESTful API for managing users, blog posts and comments. It provides e
 
 1. Clone the repository:
 
-> ```
-> git clone https://github.com/DeadEyeIndia/verlynk-backend.git
-> ```
+```
+git clone https://github.com/DeadEyeIndia/verlynk-backend.git
+```
