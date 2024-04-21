@@ -27,8 +27,8 @@ const router = express.Router();
 
 router.post("/create/post", isAuthenticatedUser, uploadPosts, newPost);
 router.get("/post/:postid", getPost);
-router.put("/edit/post/:postid", isAuthenticatedUser, editPost);
-router.put(
+router.patch("/edit/post/:postid", isAuthenticatedUser, editPost);
+router.patch(
   "/edit/post/upload/:postid",
   isAuthenticatedUser,
   uploadPosts,
