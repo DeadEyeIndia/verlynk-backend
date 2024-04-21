@@ -7,6 +7,7 @@ This is a RESTful API for managing users, blog posts and comments. It provides e
 - [Features](#features)
 - [Technologies used](#technologies-used)
 - [Setup Instructions](#setup-instructions)
+  - [List of npm packages](https://www.npmjs.com/)
 - [API Endpoints](#api-endpoints)
 - [Authentication](#authentication)
 - [Error Handling](#error-handling)
@@ -27,6 +28,18 @@ This is a RESTful API for managing users, blog posts and comments. It provides e
 - [Typescript](https://www.typescriptlang.org/)
 
 ## Setup Instructions
+
+### List of npm packages
+
+- express - `^4.19.2`
+- bcryptjs - `^2.4.3`
+- body-parser - `^1.20.2`
+- cookie-parser - `^1.4.6`
+- cors - `^2.8.5`
+- dotenv - `^16.4.5`
+- jsonwebtoken - `^9.0.2`
+- mongodb - `^6.5.0`
+- multer - `^1.4.5-lts.1`
 
 1. Clone the repository:
 
