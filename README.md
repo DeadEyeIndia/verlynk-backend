@@ -12,3 +12,23 @@ This is a RESTful API for managing users, blog posts and comments. It provides e
 - [Error Handling](#error-handling)
 
 ## Features
+
+- User Management: Create, read, update and delete user profiles.
+- Blog Posts: Create, read, update and delete blog posts.
+- Comments: Add, view and delete comments on blog posts.
+- Authentication: JWT-based authentication for protected routes.
+
+## Technologies Used
+
+- Node.js
+- Express.js
+- MongoDB (NoSQL database)
+- Typescript
+
+## Setup Instructions
+
+1. Clone the repository:
+
+\`\`\`bash
+git clone https://github.com/DeadEyeIndia/verlynk-backend.git
+\`\`\`
