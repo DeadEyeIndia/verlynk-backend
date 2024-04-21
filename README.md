@@ -4,9 +4,11 @@ This is a RESTful API for managing users, blog posts and comments. It provides e
 
 ## Table of contents
 
-- Features
-- Technologies used
-- Setup Instructions
-- API Endpoints
-- Authentication
-- Error Handling
+- [Features](#features)
+- [Technologies used](#technologies-used)
+- [Setup Instructions](#setup-instructions)
+- [API Endpoints](#api-endpoints)
+- [Authentication](#authentication)
+- [Error Handling](#error-handling)
+
+## Features
