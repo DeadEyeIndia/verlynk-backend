@@ -19,7 +19,7 @@ import {
 const router = express.Router();
 
 router.post("/add/comment/:postid", isAuthenticatedUser, newComment);
-router.get("/comments/:postid", isAuthenticatedUser, getPostComments);
+router.get("/comments/:postid", getPostComments);
 router.delete(
   "/delete/comment/:postid/:commentid",
   isAuthenticatedUser,

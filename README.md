@@ -86,18 +86,28 @@ npm run start
 All API's are prefixed with `/api/`
 
 - User Management:
-  | Method | URL | Protected Route | Description | Required |
-  | ------ | ----------------- | ---- | ----------------------------------------- | --------------------------- |
-  | `POST` | `/api/signup` | No | Create a new user. | fullname, email, password |
-  | `POST` | `/api/signin` | No |Login with user credentials. | email, password |
-  | `GET` | `/api/me` | Yes | Get current logged in user | |
-  | `POST` | `/api/signout` | Yes |User Logout. | |
+
+  | Method | URL            | Protected Route | Description                  | Required                  |
+  | ------ | -------------- | --------------- | ---------------------------- | ------------------------- |
+  | `POST` | `/api/signup`  | No              | Create a new user.           | fullname, email, password |
+  | `POST` | `/api/signin`  | No              | Login with user credentials. | email, password           |
+  | `GET`  | `/api/me`      | Yes             | Get current logged in user   |                           |
+  | `POST` | `/api/signout` | Yes             | User Logout.                 |                           |
 
 - Blog Post Management:
-  | Method | URL | Protected Route | Description | Required |
-  | ------ | ----------------- | ---- | ----------------------------------------- | --------------------------- |
-  | `POST` | `/api/create/post` | Yes | Add a new blog post. | title, postimage, intro, quickintrotitle, quickintrolist, resulttitle, resultlist, conclusion |
-  | `GET` | `/api/post/:postid` | No | Get blog post. | postid |
-  | `PATCH` | `/api/edit/post/:postid` | Yes | Edit a blog post. | postid, title, intro, quickintrotitle, quickintrolist, resulttitle, resultlist, conclusion |
-  | `PATCH` | `/api/edit/post/upload/:postid` | Yes | Edit image of a blog post. | postid, postimage |
-  | `DELETE` | `/api/delete/post/:postid` | Yes | Delete image of a blog post. | postid |
+
+  | Method   | URL                             | Protected Route | Description                  | Required                                                                                      |
+  | -------- | ------------------------------- | --------------- | ---------------------------- | --------------------------------------------------------------------------------------------- |
+  | `POST`   | `/api/create/post`              | Yes             | Add a new blog post.         | title, postimage, intro, quickintrotitle, quickintrolist, resulttitle, resultlist, conclusion |
+  | `GET`    | `/api/post/:postid`             | No              | Get blog post.               | postid                                                                                        |
+  | `PATCH`  | `/api/edit/post/:postid`        | Yes             | Edit a blog post.            | postid, title, intro, quickintrotitle, quickintrolist, resulttitle, resultlist, conclusion    |
+  | `PATCH`  | `/api/edit/post/upload/:postid` | Yes             | Edit image of a blog post.   | postid, postimage                                                                             |
+  | `DELETE` | `/api/delete/post/:postid`      | Yes             | Delete image of a blog post. | postid                                                                                        |
+
+- Comment Management:
+
+  | Method   | URL                                      | Protected Route | Description                      | Required            |
+  | -------- | ---------------------------------------- | --------------- | -------------------------------- | ------------------- |
+  | `POST`   | `/api/add/comment/:postid`               | Yes             | Add comment on blog post.        | commenttext, postid |
+  | `GET`    | `/api/comments/:postid`                  | No              | Get all comments on blog post.   | postid              |
+  | `DELETE` | `/api/delete/comment/:postid/:commentid` | Yes             | Delete a comment from blog post. | postid              |
