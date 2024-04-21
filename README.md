@@ -8,6 +8,7 @@ This is a RESTful API for managing users, blog posts and comments. It provides e
 - [Technologies used](#technologies-used)
 - [Setup Instructions](#setup-instructions)
   - [List of npm packages](#list-of-npm-packages)
+  - [Setup](#setup)
 - [API Endpoints](#api-endpoints)
 - [Authentication](#authentication)
 - [Error Handling](#error-handling)
@@ -40,6 +41,8 @@ This is a RESTful API for managing users, blog posts and comments. It provides e
 - jsonwebtoken - `^9.0.2`
 - mongodb - `^6.5.0`
 - multer - `^1.4.5-lts.1`
+
+### Setup
 
 1. Clone the repository:
 
