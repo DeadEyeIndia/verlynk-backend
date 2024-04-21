@@ -22,10 +22,6 @@ declare global {
         _id: ObjectId;
         email: string;
       };
-      postimages: {
-        id: ObjectId;
-        filename: string;
-      };
     }
   }
 }

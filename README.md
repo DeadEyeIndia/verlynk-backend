@@ -32,3 +32,49 @@ This is a RESTful API for managing users, blog posts and comments. It provides e
 ```
 git clone https://github.com/DeadEyeIndia/verlynk-backend.git
 ```
+
+2. Navigate to the project directory:
+
+```
+cd verlynk-backend
+```
+
+3. Install dependencies:
+
+```
+npm install
+```
+
+> Note: To run above code you need node installed
+>
+> If not install use below link to install:
+> [Node.js](https://nodejs.org/en/download)
+> Install LTS version 18.20.2 or newer to run the application properly.
+
+4. Set up environment variables:
+
+> Create a .env file in the root directory and define the following variables:
+
+```
+PORT=
+MONGODB_URI=
+JWT_SECRET=
+JWT_EXPIRE=
+DB_NAME=
+BUCKET_NAME=
+NODE_ENV=
+```
+
+> Make sure to add all variables values
+
+5. Build the application:
+
+```
+npm run start:build
+```
+
+6. Run the application:
+
+```
+npm run start
+```
