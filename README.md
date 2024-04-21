@@ -7,7 +7,7 @@ This is a RESTful API for managing users, blog posts and comments. It provides e
 - [Features](#features)
 - [Technologies used](#technologies-used)
 - [Setup Instructions](#setup-instructions)
-  - [List of npm packages](https://www.npmjs.com/)
+  - [List of npm packages](#list-of-npm-packages)
 - [API Endpoints](#api-endpoints)
 - [Authentication](#authentication)
 - [Error Handling](#error-handling)
