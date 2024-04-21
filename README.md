@@ -20,10 +20,10 @@ This is a RESTful API for managing users, blog posts and comments. It provides e
 
 ## Technologies Used
 
-- Node.js
-- Express.js
-- MongoDB (NoSQL database)
-- Typescript
+- ([Node.js](https://nodejs.org/en))
+- [Express.js](https://expressjs.com/)
+- [MongoDB (NoSQL database)](https://www.mongodb.com/)
+- [Typescript](https://www.typescriptlang.org/)
 
 ## Setup Instructions
 
@@ -78,3 +78,10 @@ npm run start:build
 ```
 npm run start
 ```
+
+> The server will start running on the specified port (default is 3010)
+
+## API Endpoints
+
+- User Management:
+  - \`POST /api/signup\`: Register a new user.
