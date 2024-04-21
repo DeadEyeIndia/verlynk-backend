@@ -95,9 +95,9 @@ All API's are prefixed with `/api/`
   | `GET`  | `/api/me`      | Yes             | Get current logged in user   |                           |
   | `POST` | `/api/signout` | Yes             | User Logout.                 |                           |
 
-- Blog Post Management:
-
 > Note: For file upload [MongoDB GridFS](https://www.mongodb.com/docs/manual/core/gridfs/) comes in picture, if you want to no more about this click on link.
+
+- Blog Post Management:
 
 | Method   | URL                             | Protected Route | Description                  | Required                                                                                      |
 | -------- | ------------------------------- | --------------- | ---------------------------- | --------------------------------------------------------------------------------------------- |
