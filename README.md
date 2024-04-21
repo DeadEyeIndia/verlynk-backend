@@ -92,3 +92,8 @@ All API's are prefixed with `/api/`
   | `POST` | `/api/signin` | Login with user credentials. | email, password |
   | `GET` | `/api/me` | Get current logged in user | |
   | `POST` | `/api/signout` | User Logout. | |
+
+- Blog Post Management:
+  | Method | URL | Description | Required |
+  | ------ | ----------------- | ----------------------------------------- | --------------------------- |
+  | `POST` | `/api/create/post` | Add a new blog post. | title, postimage, intro, quickintrotitle, quickintrolist, resulttitle, resultlist, conclusion |
