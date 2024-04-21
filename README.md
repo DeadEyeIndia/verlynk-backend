@@ -23,6 +23,7 @@ This is a RESTful API for managing users, blog posts and comments. It provides e
 - [Node.js](https://nodejs.org/en)
 - [Express.js](https://expressjs.com/)
 - [MongoDB (NoSQL database)](https://www.mongodb.com/)
+- [MongoDB GridFS](https://www.mongodb.com/docs/manual/core/gridfs/)
 - [Typescript](https://www.typescriptlang.org/)
 
 ## Setup Instructions
@@ -96,13 +97,15 @@ All API's are prefixed with `/api/`
 
 - Blog Post Management:
 
-  | Method   | URL                             | Protected Route | Description                  | Required                                                                                      |
-  | -------- | ------------------------------- | --------------- | ---------------------------- | --------------------------------------------------------------------------------------------- |
-  | `POST`   | `/api/create/post`              | Yes             | Add a new blog post.         | title, postimage, intro, quickintrotitle, quickintrolist, resulttitle, resultlist, conclusion |
-  | `GET`    | `/api/post/:postid`             | No              | Get blog post.               | postid                                                                                        |
-  | `PATCH`  | `/api/edit/post/:postid`        | Yes             | Edit a blog post.            | postid, title, intro, quickintrotitle, quickintrolist, resulttitle, resultlist, conclusion    |
-  | `PATCH`  | `/api/edit/post/upload/:postid` | Yes             | Edit image of a blog post.   | postid, postimage                                                                             |
-  | `DELETE` | `/api/delete/post/:postid`      | Yes             | Delete image of a blog post. | postid                                                                                        |
+> Note: For file upload [MongoDB GridFS](https://www.mongodb.com/docs/manual/core/gridfs/) comes in picture, if you want to no more about this click on link.
+
+| Method   | URL                             | Protected Route | Description                  | Required                                                                                      |
+| -------- | ------------------------------- | --------------- | ---------------------------- | --------------------------------------------------------------------------------------------- |
+| `POST`   | `/api/create/post`              | Yes             | Add a new blog post.         | title, postimage, intro, quickintrotitle, quickintrolist, resulttitle, resultlist, conclusion |
+| `GET`    | `/api/post/:postid`             | No              | Get blog post.               | postid                                                                                        |
+| `PATCH`  | `/api/edit/post/:postid`        | Yes             | Edit a blog post.            | postid, title, intro, quickintrotitle, quickintrolist, resulttitle, resultlist, conclusion    |
+| `PATCH`  | `/api/edit/post/upload/:postid` | Yes             | Edit image of a blog post.   | postid, postimage                                                                             |
+| `DELETE` | `/api/delete/post/:postid`      | Yes             | Delete image of a blog post. | postid                                                                                        |
 
 - Comment Management:
 
@@ -111,3 +114,13 @@ All API's are prefixed with `/api/`
   | `POST`   | `/api/add/comment/:postid`               | Yes             | Add comment on blog post.        | commenttext, postid |
   | `GET`    | `/api/comments/:postid`                  | No              | Get all comments on blog post.   | postid              |
   | `DELETE` | `/api/delete/comment/:postid/:commentid` | Yes             | Delete a comment from blog post. | postid              |
+
+## Authentication
+
+- Some API uses JWT (JSON Web Tokens) for authentication.
+- Protected routes require a valid JWT token to access. Users must include the token in the Authorization header of the HTTP request.
+
+## Error Handling
+
+- The API handles errors gracefully and provides informative error messages.
+- Input data is validated to ensure consistency and prevent potential errors.
