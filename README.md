@@ -87,7 +87,7 @@ All API's are prefixed with `/api/`
 
 - User Management:
   | Method | URL | Description | Required |
-  | ------ | ------------- | ---------------------------- | ------------------------------- |
+  | ------ | ----------------- | ----------------------------------------- | --------------------------- |
   | `POST` | `/api/signup` | Create a new user. | fullname, email, password |
   | `POST` | `/api/signin` | Login with user credentials. | email, password |
   | `GET` | `/api/me` | Get current logged in user | |
