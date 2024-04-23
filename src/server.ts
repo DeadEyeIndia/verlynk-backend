@@ -10,6 +10,7 @@ import cors from "cors";
 import authRouter from "./routes/auth";
 import userRouter from "./routes/user";
 import postRouter from "./routes/post";
+import imageRouter from "./routes/image";
 import commentRouter from "./routes/comment";
 import errorHandler from "./middleware/error";
 
@@ -66,6 +67,13 @@ app.use("/api", userRouter);
  * @param {Router} postRouter - The post router to be mounted.
  */
 app.use("/api", postRouter);
+
+/**
+ * Mounts the post router at the "/api" base path.
+ * @param {string} "/api" - The base path for the router.
+ * @param {Router} imageRouter - The image router to be mounted.
+ */
+app.use("/api", imageRouter);
 
 /**
  * Mounts the comment router at the "/api" base path.
