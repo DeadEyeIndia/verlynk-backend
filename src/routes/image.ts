@@ -6,7 +6,7 @@ import { getPostImage } from "../controllers/image";
 /**
  * Image Route
  *
- * POST IMAGE - /post/:filename - limiter
+ * POST IMAGE - /post/:filename
  *
  */
 const router = express.Router();
