@@ -1,4 +1,5 @@
 import express from "express";
+import rateLimit from "express-rate-limit";
 
 import { isAuthenticatedUser } from "../middleware/auth";
 import {
@@ -18,10 +19,22 @@ import {
  */
 const router = express.Router();
 
-router.post("/add/comment/:postid", isAuthenticatedUser, newComment);
-router.get("/comments/:postid", getPostComments);
-router.delete(
-  "/delete/comment/:postid/:commentid",
+router.route("/add/comment/:postid").post(
+  rateLimit({
+    limit: 100,
+    windowMs: 6 * 60 * 60 * 1000,
+    message: "Too many requests, please try again later",
+  }),
+  isAuthenticatedUser,
+  newComment
+);
+router.route("/comments/:postid").get(getPostComments);
+router.route("/delete/comment/:postid/:commentid").delete(
+  rateLimit({
+    limit: 100,
+    windowMs: 6 * 60 * 60 * 1000,
+    message: "Too many requests, please try again later",
+  }),
   isAuthenticatedUser,
   deleteComment
 );

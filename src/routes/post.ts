@@ -1,4 +1,5 @@
 import express from "express";
+import rateLimit from "express-rate-limit";
 
 import { isAuthenticatedUser } from "../middleware/auth";
 import {
@@ -14,9 +15,9 @@ import { uploadPosts } from "../utils/post-upload";
 /**
  * Post Route
  *
- * POST FIND - /posts
- *
  * POST CREATE - /create/post
+ *
+ * POST FIND - /posts
  *
  * POST FIND - /post/:postid
  *
@@ -28,16 +29,45 @@ import { uploadPosts } from "../utils/post-upload";
  */
 const router = express.Router();
 
-router.get("/posts", getPosts);
-router.post("/create/post", isAuthenticatedUser, uploadPosts, newPost);
-router.get("/post/:postid", getPost);
-router.patch("/edit/post/:postid", isAuthenticatedUser, editPost);
-router.patch(
-  "/edit/post/upload/:postid",
+router.route("/create/post").post(
+  rateLimit({
+    limit: 100,
+    windowMs: 24 * 60 * 60 * 1000,
+    message: "Too many requests, please try again later",
+  }),
+  isAuthenticatedUser,
+  uploadPosts,
+  newPost
+);
+router.route("/posts").get(getPosts);
+router.route("/post/:postid").get(getPost);
+router.route("/edit/post/:postid").patch(
+  rateLimit({
+    limit: 100,
+    windowMs: 6 * 60 * 60 * 1000,
+    message: "Too many requests, please try again later",
+  }),
+  isAuthenticatedUser,
+  editPost
+);
+router.route("/edit/post/upload/:postid").patch(
+  rateLimit({
+    limit: 100,
+    windowMs: 6 * 60 * 60 * 1000,
+    message: "Too many requests, please try again later",
+  }),
   isAuthenticatedUser,
   uploadPosts,
   editPostImage
 );
-router.delete("/delete/post/:postid", isAuthenticatedUser, deletePost);
+router.route("/delete/post/:postid").delete(
+  rateLimit({
+    limit: 50,
+    windowMs: 6 * 60 * 60 * 1000,
+    message: "Too many requests, please try again later",
+  }),
+  isAuthenticatedUser,
+  deletePost
+);
 
 export default router;
