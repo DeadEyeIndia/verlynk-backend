@@ -4,6 +4,8 @@ import { ObjectId } from "mongodb";
 import catchAsyncError from "../middleware/catchAsyncError";
 import ErrorHandler from "../utils/errorHandling";
 import { getMongoClient } from "../models/mongodb";
+import { findPostById, findPostByQueryParams } from "../lib/data/post";
+import { getUploadPostofFile } from "../utils/post-upload";
 import { IPost } from "../models/post";
 import { IComment } from "../models/comment";
 import {
@@ -11,9 +13,6 @@ import {
   DB_NAME,
   POST_COLLECTION,
 } from "../utils/constants";
-import { getUploadPostofFile } from "../utils/post-upload";
-import { findPostById } from "../lib/data/post";
-import { findCommentByPostId } from "../lib/data/comment";
 
 /**
  * Controller function for creating a new post.
@@ -134,6 +133,38 @@ export const newPost = catchAsyncError(
 
     (await client).close();
     res.status(201).json({ success: acknowledged });
+  }
+);
+
+/**
+ * Post controller function for get a posts using query params.
+ * @param {Request} req - The request object containing the posts with query parameters and the fields to update.
+ * @param {Response} res - The response object sending client a success and modifiedcount.
+ * @param {NextFunction} next - The next function to be called in the middleware stack.
+ * @returns {Promise<void>} A promise that resolves after handling the get post operation.
+ */
+export const getPosts = catchAsyncError(
+  async (req: Request<{}, {}, {}>, res: Response, next: NextFunction) => {
+    const query = req.query as { page: string };
+    const { client } = await getMongoClient();
+    const db = (await client).db(DB_NAME);
+
+    const posts = await findPostByQueryParams(db, query);
+
+    if (!posts) {
+      (await client).close();
+      return res.status(200).json({ success: true, posts: [] });
+    }
+
+    (await client).close();
+    return res.status(200).json({
+      success: true,
+      posts: {
+        totalPosts: posts.totalPosts,
+        currentFetchedPosts: posts.posts.length,
+        posts: posts.posts,
+      },
+    });
   }
 );
 

@@ -2,6 +2,7 @@ import express from "express";
 
 import { isAuthenticatedUser } from "../middleware/auth";
 import {
+  getPosts,
   editPost,
   getPost,
   newPost,
@@ -12,6 +13,8 @@ import { uploadPosts } from "../utils/post-upload";
 
 /**
  * Post Route
+ *
+ * POST FIND - /posts
  *
  * POST CREATE - /create/post
  *
@@ -25,6 +28,7 @@ import { uploadPosts } from "../utils/post-upload";
  */
 const router = express.Router();
 
+router.get("/posts", getPosts);
 router.post("/create/post", isAuthenticatedUser, uploadPosts, newPost);
 router.get("/post/:postid", getPost);
 router.patch("/edit/post/:postid", isAuthenticatedUser, editPost);

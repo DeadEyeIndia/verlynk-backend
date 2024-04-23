@@ -1,12 +1,14 @@
 import { Db, ObjectId } from "mongodb";
 
 import { IComment } from "../../models/comment";
-import {
-  COMMENT_COLLECTION,
-  POST_COLLECTION,
-  USER_COLLECTION,
-} from "../../utils/constants";
+import { COMMENT_COLLECTION, USER_COLLECTION } from "../../utils/constants";
 
+/**
+ *
+ * @param db DB connection instance
+ * @param postid Post id for finding document
+ * @returns A comment document array containing user
+ */
 export const findCommentByPostId = async (db: Db, postid: string) => {
   try {
     const comments = await db
@@ -43,6 +45,12 @@ export const findCommentByPostId = async (db: Db, postid: string) => {
   }
 };
 
+/**
+ *
+ * @param db DB connection instance.
+ * @param commentid Comment id for finding document.
+ * @returns A comment document.
+ */
 export const findCommentByCommentId = async (db: Db, commentid: string) => {
   try {
     const comment = await db

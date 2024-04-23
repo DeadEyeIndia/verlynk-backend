@@ -17,7 +17,7 @@ import { COMMENT_COLLECTION, DB_NAME } from "../utils/constants";
  * @param {Request} req - The request object containing the post ID parameter and the commenttext field.
  * @param {Response} res - The response object.
  * @param {NextFunction} next - The next function to be called in the middleware stack.
- * @returns {Promise<void>} A promise that resolves after handling the deleting post operation.
+ * @returns {Promise<void>} A promise that resolves after handling the adding comment operation.
  */
 export const newComment = catchAsyncError(
   async (
@@ -72,6 +72,13 @@ export const newComment = catchAsyncError(
   }
 );
 
+/**
+ * Comment controller function for getting all comments of post.
+ * @param {Request} req - The request object containing the post ID parameter.
+ * @param {Response} res - The response object.
+ * @param {NextFunction} next - The next function to be called in the middleware stack.
+ * @returns {Promise<void>} A promise that resolves after handling the finding comment operation.
+ */
 export const getPostComments = catchAsyncError(
   async (
     req: Request<{ postid: string }>,
@@ -104,6 +111,13 @@ export const getPostComments = catchAsyncError(
   }
 );
 
+/**
+ * Comment controller function for delete comment from post.
+ * @param {Request} req - The request object containing the post ID and comment ID parameter.
+ * @param {Response} res - The response object.
+ * @param {NextFunction} next - The next function to be called in the middleware stack.
+ * @returns {Promise<void>} A promise that resolves after handling the deleting comment operation.
+ */
 export const deleteComment = catchAsyncError(
   async (
     req: Request<{ postid: string; commentid: string }>,
