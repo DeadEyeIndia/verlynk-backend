@@ -104,25 +104,27 @@ All API's are prefixed with `/api/`
 
 - User Management:
 
-  | Method | URL            | Protected Route | Description                  | Required                  |
-  | ------ | -------------- | --------------- | ---------------------------- | ------------------------- |
-  | `POST` | `/api/signup`  | No              | Create a new user.           | fullname, email, password |
-  | `POST` | `/api/signin`  | No              | Login with user credentials. | email, password           |
-  | `GET`  | `/api/me`      | Yes             | Get current logged in user   |                           |
-  | `GET`  | `/api/me`      | Yes             | Get current logged in user   |                           |
-  | `POST` | `/api/signout` | Yes             | User Logout.                 |                           |
+  | Method  | URL                  | Protected Route | Description                  | Required                  |
+  | ------- | -------------------- | --------------- | ---------------------------- | ------------------------- |
+  | `POST`  | `/api/signup`        | No              | Create a new user.           | fullname, email, password |
+  | `POST`  | `/api/signin`        | No              | Login with user credentials. | email, password           |
+  | `GET`   | `/api/me`            | Yes             | Get current logged in user   |                           |
+  | `PATCH` | `/api/edit`          | Yes             | Edit user information        | fullname, email           |
+  | `PATCH` | `/api/edit/password` | Yes             | Edit user password           | password                  |
+  | `POST`  | `/api/signout`       | Yes             | User Logout.                 |                           |
 
 - Blog Post Management:
 
 > Note: For file upload [MongoDB GridFS](https://www.mongodb.com/docs/manual/core/gridfs/) comes in picture, if you want to no more about this click on link.
 
-| Method   | URL                             | Protected Route | Description                  | Required                                                                                      |
-| -------- | ------------------------------- | --------------- | ---------------------------- | --------------------------------------------------------------------------------------------- |
-| `POST`   | `/api/create/post`              | Yes             | Add a new blog post.         | title, postimage, intro, quickintrotitle, quickintrolist, resulttitle, resultlist, conclusion |
-| `GET`    | `/api/post/:postid`             | No              | Get blog post.               | postid                                                                                        |
-| `PATCH`  | `/api/edit/post/:postid`        | Yes             | Edit a blog post.            | postid, title, intro, quickintrotitle, quickintrolist, resulttitle, resultlist, conclusion    |
-| `PATCH`  | `/api/edit/post/upload/:postid` | Yes             | Edit image of a blog post.   | postid, postimage                                                                             |
-| `DELETE` | `/api/delete/post/:postid`      | Yes             | Delete image of a blog post. | postid                                                                                        |
+| Method   | URL                                 | Protected Route | Description                  | Required                                                                                      |
+| -------- | ----------------------------------- | --------------- | ---------------------------- | --------------------------------------------------------------------------------------------- |
+| `POST`   | `/api/create/post`                  | Yes             | Add a new blog post.         | title, postimage, intro, quickintrotitle, quickintrolist, resulttitle, resultlist, conclusion |
+| `GET`    | `/api/posts?page=1` or `/api/posts` | No              | Get blog posts list.         | Edit page query if not provided API will fetch latest 8 posts only.                           |
+| `GET`    | `/api/post/:postid`                 | No              | Get blog post.               | postid                                                                                        |
+| `PATCH`  | `/api/edit/post/:postid`            | Yes             | Edit a blog post.            | postid, title, intro, quickintrotitle, quickintrolist, resulttitle, resultlist, conclusion    |
+| `PATCH`  | `/api/edit/post/upload/:postid`     | Yes             | Edit image of a blog post.   | postid, postimage                                                                             |
+| `DELETE` | `/api/delete/post/:postid`          | Yes             | Delete image of a blog post. | postid                                                                                        |
 
 - Comment Management:
 
@@ -141,3 +143,10 @@ All API's are prefixed with `/api/`
 
 - The API handles errors gracefully and provides informative error messages.
 - Input data is validated to ensure consistency and prevent potential errors.
+
+## Bonus
+
+List of additional functionalities added to Blog Post
+
+1. Implemented pagination for the blog post ist.
+2. Added rate limiter to prevent abuse of the API.
