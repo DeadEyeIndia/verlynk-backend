@@ -19,6 +19,10 @@ import rateLimit from "express-rate-limit";
  * USER PROFILE[ME] - /me
  *
  * USER EDIT(INFO) - /edit
+ *
+ * USER EDIT(PASSWORD) - /edit/password
+ *
+ * USER DELETE - /delete/:userid
  */
 const router = express.Router();
 

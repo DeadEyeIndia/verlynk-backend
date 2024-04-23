@@ -109,6 +109,7 @@ All API's are prefixed with `/api/`
   | `POST` | `/api/signup`  | No              | Create a new user.           | fullname, email, password |
   | `POST` | `/api/signin`  | No              | Login with user credentials. | email, password           |
   | `GET`  | `/api/me`      | Yes             | Get current logged in user   |                           |
+  | `GET`  | `/api/me`      | Yes             | Get current logged in user   |                           |
   | `POST` | `/api/signout` | Yes             | User Logout.                 |                           |
 
 - Blog Post Management:
